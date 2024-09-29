@@ -161,18 +161,9 @@ class ServiceEngineerChatbot:
         described in the document.
         """
 
-        model_generation_cofig = (
-            genai.types.GenerationConfig(
-                candidate_count=1,
-                max_output_tokens=1500,
-                temperature=0.4,
-            ),
-        )
-
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             system_instruction=model_system_instruction,
-            generation_config=model_generation_cofig,
         )
         return model
 
