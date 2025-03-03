@@ -1,6 +1,4 @@
-import random
 import sqlite3
-from datetime import datetime
 
 
 class Appliances:
@@ -81,7 +79,8 @@ class Appliances:
 
     def delete_appliance(self, model_number):
         cursor = self.conn.cursor()
-        cursor.execute("DELETE FROM appliances WHERE model_number = ?", (model_number,))
+        cursor.execute(
+            "DELETE FROM appliances WHERE model_number = ?", (model_number,))
         self.conn.commit()
 
     def fetch_all_categories(self):
@@ -120,6 +119,14 @@ class Appliances:
     def fetch_all_appliances(self):
         cursor = self.conn.cursor()
         cursor.execute("""SELECT model_number FROM appliances""")
+        return cursor.fetchall()
+
+    def fetch_all_appliances_by_sub_category(self, sub_category):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """SELECT model_number, brand FROM appliances WHERE sub_category = ?""",
+            (sub_category,),
+        )
         return cursor.fetchall()
 
     def close_connection(self):
@@ -181,7 +188,8 @@ class ServiceGuides:
 
     def delete_service_guide(self, guide_id):
         cursor = self.conn.cursor()
-        cursor.execute("DELETE FROM service_guides WHERE guide_id = ?", (guide_id,))
+        cursor.execute(
+            "DELETE FROM service_guides WHERE guide_id = ?", (guide_id,))
         self.conn.commit()
 
     def fetch_guides_by_model_number(self, model_number):
@@ -197,7 +205,8 @@ class ServiceGuides:
         cursor.execute("""SELECT model_number FROM service_guides""")
         return cursor.fetchall()
 
-    def add_troubleshoot_guide_for_category(self, sub_category, guide_file_url):
+    def add_troubleshoot_guide_for_category(
+            self, sub_category, guide_file_url):
         cursor = self.conn.cursor()
         # cursor.execute("DROP TABLE service_guides")
 
@@ -225,59 +234,3 @@ class ServiceGuides:
 
     def close_connection(self):
         self.conn.close()
-
-
-if __name__ == "__main__":
-    appliance_db = Appliances()
-    guide_db = ServiceGuides()
-
-    """
-    guide_db.add_troubleshoot_guide_for_category(
-        sub_category='Freestanding Double Oven Gas Range',
-        guide_file_url='data/service_guides/freestanding_double_oven_gas_range_service_guide.pdf',
-    )
-    """
-
-    print(guide_db.fetch_guides_by_model_number("ALD10DT"))
-
-    """
-    print(appliance_db.fetch_appliances_by_sub_category("Amana"))
-
-    brand = "Maytag"
-    sub_category = "Freestanding Double Oven Gas Range"
-
-    my_models = [
-        "MGR6775ADB/Q/S/W", "MGR6875ADB/Q/S/W",   # 48-inch
-    ]
-
-    for model in my_models:
-        appliance_db.add_appliance(
-            model_number=model,
-            appliance_name=f"{brand} {sub_category}",
-            brand=brand,
-            category="Gas Range",
-            sub_category=sub_category,
-            warranty_period=random.choice([18, 24, 30, 36]),
-            launch_date=random.choice(["2024-04-27", "2022-11-23", "2024-08-19", "2023-03-22", "2024-02-06"]),
-            energy_rating=random.choice([2.5, 3, 3.5, 4, 4.5]),
-            availability_status=random.choice(["available", "out_of_stock"])
-        )
-
-        print(f"Done {model}")
-    
-    for i in appliance_db.fetch_appliances_by_sub_category(sub_category=sub_category):
-        print(i)
-
-    guide_db.add_service_guide(
-        appliance_id=appliance_id,
-        guide_name="X100 Fridge Troubleshooting Guide",
-        guide_file_url="https://example.com/guides/x100_fridge_troubleshoot.pdf",
-        guide_version="1.0"
-    )
-
-    guides = guide_db.fetch_guide_by_model_and_category("X100", "Refrigerator")
-    print("Guides for X100 Refrigerator:", guides)
-
-    appliance_db.close_connection()
-    guide_db.close_connection()
-    """

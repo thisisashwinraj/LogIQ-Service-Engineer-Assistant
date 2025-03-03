@@ -3,7 +3,7 @@ showSidebarNavigation = false
 showErrorDetails = false
 
 [theme]
-primaryColor="#64ABD8"
-backgroundColor="#111111"
-secondaryBackgroundColor="#181818"
-textColor="#FFFFFF"
+primaryColor="#266B97"
+backgroundColor="#FBFBFE"
+secondaryBackgroundColor="#F0F2F6"
+textColor="#040316"
