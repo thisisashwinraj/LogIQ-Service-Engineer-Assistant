@@ -3,7 +3,7 @@ import time
 
 from backend.utils.geo_operations import LocationServices
 
-from database.cloud_sql.shared import Engineers
+from database.cloud_sql.queries import QueryEngineers
 from database.firebase.firestore import OnsiteServiceRequestCollection
 
 
@@ -18,10 +18,10 @@ class OnsiteServiceRequestAssignment:
     def _fetch_nearby_available_engineers(
         self, district, appliance_sub_category, service_type
     ):
-        engineers = Engineers()
+        query_engineers = QueryEngineers()
         location_services = LocationServices()
 
-        available_engineer_ids = engineers.fetch_available_engineer_for_service_request(
+        available_engineer_ids = query_engineers.fetch_available_engineer_for_service_request(
             district, appliance_sub_category, service_type
         )
 
@@ -31,7 +31,7 @@ class OnsiteServiceRequestAssignment:
 
             for nearby_district in nearby_districts:
                 nearby_engineers = (
-                    engineers.fetch_available_engineer_for_service_request(
+                    query_engineers.fetch_available_engineer_for_service_request(
                         nearby_district, appliance_sub_category, service_type
                     )
                 )
@@ -57,10 +57,11 @@ class OnsiteServiceRequestAssignment:
         engineer_addresses = []
         engineer_data_map = {}
 
-        engineers = Engineers()
+        query_engineers = QueryEngineers()
 
         for engineer_id in available_engineer_ids:
-            engineer_data = engineers.fetch_engineer_by_id(
+            
+            engineer_data = query_engineers.fetch_engineer_details_by_id(
                 engineer_id,
                 [
                     "street",

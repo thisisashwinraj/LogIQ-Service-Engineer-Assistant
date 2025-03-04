@@ -261,6 +261,22 @@ class Appliances:
 
         return result
 
+    def fetch_all_appliances(self, columns=None):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        with pool.connect() as db_conn:
+            if columns:
+                query = sqlalchemy.text(
+                    f"SELECT {', '.join(columns)} FROM appliances")
+            else:
+                query = sqlalchemy.text("SELECT * FROM appliances")
+
+            result = db_conn.execute(query).fetchall()
+            return result
+
 
 class QueryCustomerAppliances:
     def __init__(self):
@@ -512,6 +528,23 @@ class QueryCustomers:
                     pass
 
             return results_map
+        
+    def fetch_all_customers(self, columns=None):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        if columns:
+            query = sqlalchemy.text(
+                f"SELECT {', '.join(columns)} FROM customers")
+        else:
+            query = sqlalchemy.text("SELECT * FROM customers")
+
+        with pool.connect() as db_conn:
+            result = db_conn.execute(query)
+
+        return result.fetchall()
 
 
 class QueryEngineers:
@@ -611,3 +644,105 @@ class QueryEngineers:
                     pass
 
             return results_map
+        
+    def fetch_available_engineer_for_service_request(
+        self, district, specialization, skill
+    ):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        with pool.connect() as db_conn:
+            query = sqlalchemy.text(
+                """
+                SELECT engineer_id
+                FROM engineers
+                WHERE availability = True AND district = :district AND JSON_CONTAINS(skills, JSON_QUOTE(:skill)) AND JSON_CONTAINS(specializations, JSON_QUOTE(:specialization))
+                ORDER BY active_tickets ASC
+                LIMIT 10
+                """
+            )
+
+            result = db_conn.execute(
+                query,
+                parameters={
+                    "district": district,
+                    "skill": skill,
+                    "specialization": specialization,
+                },
+            ).fetchall()
+
+            if result:
+                return list(result[0])
+            else:
+                return []
+
+    def fetch_all_engineers(self, columns=None):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        with pool.connect() as db_conn:
+            if columns:
+                query = sqlalchemy.text(
+                    f"SELECT {', '.join(columns)} FROM engineers")
+            else:
+                query = sqlalchemy.text("SELECT * FROM engineers")
+
+            result = db_conn.execute(query)
+            return result.fetchall()
+
+
+class QueryServiceGuides:
+    def __init__(self):
+        credentials = Credentials.from_service_account_file(
+            "config/cloud_sql_editor_service_account_key.json"
+        )
+
+        self.connector = Connector(credentials=credentials)
+        self.db_password = st.secrets["CLOUD_SQL_PASSWORD"]
+
+    def _get_connection(self):
+        conn = self.connector.connect(
+            "logiq-project:us-central1:logiq-mysql-db",
+            "pymysql",
+            user="root",
+            password=self.db_password,
+            db="logiq_db",
+        )
+        return conn
+    
+    def fetch_guide_by_model_number(self, model_number):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        with pool.connect() as db_conn:
+            query = sqlalchemy.text(
+                """
+                SELECT guide_name, guide_file_url
+                FROM service_guides
+                WHERE model_number = :model_number
+                """
+            )
+
+            result = db_conn.execute(
+                query, parameters={"model_number": model_number}
+            ).fetchone()
+
+            return result
+
+    def fetch_model_number_of_all_guides(self):
+        pool = sqlalchemy.create_engine(
+            "mysql+pymysql://",
+            creator=self._get_connection,
+        )
+
+        with pool.connect() as db_conn:
+            query = sqlalchemy.text("SELECT model_number FROM service_guides")
+            result = db_conn.execute(query)
+
+            return result.fetchall()

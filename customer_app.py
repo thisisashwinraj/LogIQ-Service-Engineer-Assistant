@@ -24,7 +24,7 @@ from database.cloud_sql.queries import (
     QueryCustomers,
     QueryEngineers,
 )
-from database.cloud_sql.models import CustomerAppliances
+from database.cloud_sql.models import ModelCustomerAppliances
 from database.cloud_sql.migrations import MigrateCustomers
 from database.cloud_storage.document_storage import CustomerRecordsBucket
 from database.cloud_storage.multimedia_storage import (
@@ -989,7 +989,7 @@ def register_new_appliance():
                     and uploaded_warranty_certificate_to_bucket
                 ):
                     query_appliances = Appliances()
-                    model_customer_appliances = CustomerAppliances()
+                    model_customer_appliances = ModelCustomerAppliances()
 
                     try:
                         warranty_period_in_months, appliance_image_gcs_url = (
