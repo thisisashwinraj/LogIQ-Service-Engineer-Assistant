@@ -25,7 +25,7 @@ from backend.utils.geo_operations import LocationServices
 from backend.channels.email_client import TransactionalEmails
 from backend.channels.sms_client import NotificationSMS
 
-from database.firestore.general import OnsiteServiceRequestCollection
+from database.firebase.firestore import OnsiteServiceRequestCollection
 from database.cloud_sql.queries import Appliances, QueryCustomers, QueryEngineers
 from database.cloud_sql.migrations import MigrateEngineers
 from database.cloud_storage.document_storage import (

@@ -4,7 +4,7 @@ import time
 from backend.utils.geo_operations import LocationServices
 
 from database.cloud_sql.shared import Engineers
-from database.firestore.general import OnsiteServiceRequestCollection
+from database.firebase.firestore import OnsiteServiceRequestCollection
 
 
 class OnsiteServiceRequestAssignment:

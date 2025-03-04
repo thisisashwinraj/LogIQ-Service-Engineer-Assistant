@@ -31,7 +31,7 @@ from database.cloud_storage.multimedia_storage import (
     OnsiteServiceRequestsBucket,
     ProfilePicturesBucket,
 )
-from database.firestore.general import OnsiteServiceRequestCollection
+from database.firebase.firestore import OnsiteServiceRequestCollection
 
 
 st.set_page_config(
